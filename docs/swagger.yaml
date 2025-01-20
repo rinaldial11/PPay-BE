@@ -116,7 +116,7 @@ paths:
     post:
       consumes:
       - application/x-www-form-urlencoded
-      description: Create Pin Account
+      description: Authentication Pin
       parameters:
       - description: Input Pin
         in: formData

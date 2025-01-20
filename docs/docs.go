@@ -60,7 +60,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Create Pin Account",
+                "description": "Authentication Pin",
                 "consumes": [
                     "application/x-www-form-urlencoded"
                 ],
