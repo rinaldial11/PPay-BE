@@ -9,6 +9,22 @@ import (
 	"github.com/ppay/lib"
 )
 
+	type ResponseTopup struct {
+		Amount float64
+		Type   string
+	}
+
+// Transaction godoc
+// @Summary Topup
+// @Description  topup money
+// @Tags Transaction
+// @Accept x-www-form-urlencoded
+// @Produce json
+// @Param amount formData string false "amount of money"
+// @Param payment_method_id formData string false "select payment method"
+// @Success 200 {object} ResponseTopup
+// @Security ApiKeyAuth
+// @Router /topup [post]
 func Topup(c *gin.Context) {
 	var input struct {
 		Amount          float64 `json:"amount" form:"amount" binding:"required"`
@@ -87,11 +103,6 @@ func Topup(c *gin.Context) {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to commit database transaction", "details": err.Error()})
 		return
-	}
-
-	type ResponseTopup struct {
-		Amount float64
-		Type   string
 	}
 
 	response.Success("Success Top up", ResponseTopup{

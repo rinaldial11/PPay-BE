@@ -1,5 +1,21 @@
 basePath: /
 definitions:
+  controllers.ResponseTRF:
+    properties:
+      amount:
+        type: number
+      targetUser:
+        type: integer
+      type:
+        type: string
+    type: object
+  controllers.ResponseTopup:
+    properties:
+      amount:
+        type: number
+      type:
+        type: string
+    type: object
   dto.LoginDTO:
     properties:
       email:
@@ -159,6 +175,58 @@ paths:
             $ref: '#/definitions/dto.RegisterDTO'
       tags:
       - Auth
+  /topup:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: topup money
+      parameters:
+      - description: amount of money
+        in: formData
+        name: amount
+        type: string
+      - description: select payment method
+        in: formData
+        name: payment_method_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.ResponseTopup'
+      security:
+      - ApiKeyAuth: []
+      summary: Topup
+      tags:
+      - Transaction
+  /transfer/{id}:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: transfer money
+      parameters:
+      - description: send to
+        in: path
+        name: id
+        type: string
+      - description: amount of money
+        in: formData
+        name: amount
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.ResponseTRF'
+      security:
+      - ApiKeyAuth: []
+      summary: Transfer
+      tags:
+      - Transaction
   /users:
     get:
       consumes:
