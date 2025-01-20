@@ -162,6 +162,106 @@
                 }
             }
         },
+        "/transaction/expense": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get user expense",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "get user expense",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.ExpenseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transaction/history": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get Transaction History",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "get history transaction",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.TransactionHistoryResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transaction/income": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get user income",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "get user income",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.IncomeResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transaction/payment": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get payment method",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "get payment method",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PaymentMethod"
+                        }
+                    }
+                }
+            }
+        },
         "/transfer/{id}": {
             "post": {
                 "security": [
@@ -408,6 +508,22 @@
         }
     },
     "definitions": {
+        "controllers.ExpenseResponse": {
+            "type": "object",
+            "properties": {
+                "expense": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.IncomeResponse": {
+            "type": "object",
+            "properties": {
+                "income": {
+                    "type": "string"
+                }
+            }
+        },
         "controllers.ResponseTRF": {
             "type": "object",
             "properties": {
@@ -429,6 +545,51 @@
                     "type": "number"
                 },
                 "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.TransactionHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "Jumlah transaksi",
+                    "type": "number"
+                },
+                "created_at": {
+                    "description": "Timestamp transaksi",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID transaksi",
+                    "type": "integer"
+                },
+                "related_user_fullname": {
+                    "description": "Nama lengkap pengguna yang terkait",
+                    "type": "string"
+                },
+                "related_user_image": {
+                    "description": "Gambar pengguna yang terkait",
+                    "type": "string"
+                },
+                "related_user_phone": {
+                    "description": "Nomor telepon pengguna yang terkait",
+                    "type": "string"
+                },
+                "transaction_type": {
+                    "description": "'Sent', 'Received', 'Top-Up'",
+                    "type": "string"
+                },
+                "user_fullname": {
+                    "description": "Nama lengkap pengguna",
+                    "type": "string"
+                },
+                "user_image": {
+                    "description": "Gambar pengguna",
+                    "type": "string"
+                },
+                "user_phone": {
+                    "description": "Nomor telepon pengguna",
                     "type": "string"
                 }
             }
@@ -551,6 +712,58 @@
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.PaymentMethod": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDeleted": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tax": {
+                    "type": "number"
+                },
+                "topupTransactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TopupTransaction"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TopupTransaction": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDeleted": {
+                    "type": "boolean"
+                },
+                "payment_method_id": {
+                    "type": "integer"
+                },
+                "transactionID": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         }

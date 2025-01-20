@@ -1,5 +1,15 @@
 basePath: /
 definitions:
+  controllers.ExpenseResponse:
+    properties:
+      expense:
+        type: string
+    type: object
+  controllers.IncomeResponse:
+    properties:
+      income:
+        type: string
+    type: object
   controllers.ResponseTRF:
     properties:
       amount:
@@ -14,6 +24,39 @@ definitions:
       amount:
         type: number
       type:
+        type: string
+    type: object
+  controllers.TransactionHistoryResponse:
+    properties:
+      amount:
+        description: Jumlah transaksi
+        type: number
+      created_at:
+        description: Timestamp transaksi
+        type: string
+      id:
+        description: ID transaksi
+        type: integer
+      related_user_fullname:
+        description: Nama lengkap pengguna yang terkait
+        type: string
+      related_user_image:
+        description: Gambar pengguna yang terkait
+        type: string
+      related_user_phone:
+        description: Nomor telepon pengguna yang terkait
+        type: string
+      transaction_type:
+        description: '''Sent'', ''Received'', ''Top-Up'''
+        type: string
+      user_fullname:
+        description: Nama lengkap pengguna
+        type: string
+      user_image:
+        description: Gambar pengguna
+        type: string
+      user_phone:
+        description: Nomor telepon pengguna
         type: string
     type: object
   dto.LoginDTO:
@@ -96,6 +139,40 @@ definitions:
         $ref: '#/definitions/lib.PageInfo'
       status:
         type: integer
+    type: object
+  models.PaymentMethod:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      isDeleted:
+        type: boolean
+      name:
+        type: string
+      tax:
+        type: number
+      topupTransactions:
+        items:
+          $ref: '#/definitions/models.TopupTransaction'
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  models.TopupTransaction:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      isDeleted:
+        type: boolean
+      payment_method_id:
+        type: integer
+      transactionID:
+        type: integer
+      updatedAt:
+        type: string
     type: object
 info:
   contact: {}
@@ -199,6 +276,66 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Topup
+      tags:
+      - Transaction
+  /transaction/expense:
+    get:
+      description: get user expense
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.ExpenseResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: get user expense
+      tags:
+      - Transaction
+  /transaction/history:
+    get:
+      description: Get Transaction History
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.TransactionHistoryResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: get history transaction
+      tags:
+      - Transaction
+  /transaction/income:
+    get:
+      description: get user income
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.IncomeResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: get user income
+      tags:
+      - Transaction
+  /transaction/payment:
+    get:
+      description: get payment method
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PaymentMethod'
+      security:
+      - ApiKeyAuth: []
+      summary: get payment method
       tags:
       - Transaction
   /transfer/{id}:
