@@ -392,7 +392,7 @@ func UpdateUser(c *gin.Context) {
 		maxSize := int64(2 << 20) // 2MB
 		uploadDir := "public/images"
 
-		// if user.Image != "" {
+		// if *user.Image != "" {
 		// 	oldFilePath := *user.Image
 		// 	if err := os.Remove(oldFilePath); err != nil {
 		// 		log.Printf("Failed to delete old profile picture: %s", err)
