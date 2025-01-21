@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -27,6 +28,7 @@ import (
 // @Param phone formData string true "Phone Number"
 // @Success 200 {object} dto.UserSummaryDTO
 // @Router /users [post]
+
 // Create User and Wallet
 func CreateUser(c *gin.Context) {
 	response := lib.NewResponse(c)
@@ -253,6 +255,15 @@ func GetUsers(c *gin.Context) {
 	response.GetAllSuccess("Success get user", users, pageInfo)
 }
 
+// Users godoc
+// @Schemes
+// @Description  Get Profile
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.UserSummaryDTO
+// @Security ApiKeyAuth
+// @Router /users/{id} [get]
 func GetUserByID(c *gin.Context) {
 	response := lib.NewResponse(c)
 
@@ -263,7 +274,7 @@ func GetUserByID(c *gin.Context) {
 		response.Unauthorized("Unauthorized", nil)
 		return
 	}
-
+	log.Println(userId)
 	id, ok := userId.(int)
 	if !ok {
 		response.InternalServerError("Failed to parse user ID from token", nil)
@@ -381,6 +392,13 @@ func UpdateUser(c *gin.Context) {
 		maxSize := int64(2 << 20) // 2MB
 		uploadDir := "public/images"
 
+		// if *user.Image != "" {
+		// 	oldFilePath := *user.Image
+		// 	if err := os.Remove(oldFilePath); err != nil {
+		// 		log.Printf("Failed to delete old profile picture: %s", err)
+		// 	}
+		// }
+
 		imagePath, err := lib.UploadImage(c, file, allowedExts, maxSize, uploadDir)
 		if err != nil {
 			response.BadRequest("Failed to upload image", err.Error())
@@ -416,6 +434,24 @@ func GetUserByIDParam(userID int) (*models.User, error) {
 	return &user, nil
 }
 
+func GetTargetUserById(c *gin.Context) {
+	response := lib.NewResponse(c)
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	detailsUser, _ := GetUserByIDParam(id)
+
+	response.Success("Details user", detailsUser)
+}
+
+// @Delete User godoc
+// @Summary User
+// @Description Delete User
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} map[string]interface{}
+// @Router /users/{id} [delete]
 // Delete User
 func DeleteUser(c *gin.Context) {
 	response := lib.NewResponse(c)

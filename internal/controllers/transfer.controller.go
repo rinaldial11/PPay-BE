@@ -10,6 +10,23 @@ import (
 	"github.com/ppay/lib"
 )
 
+	type ResponseTRF struct {
+		Amount     float64
+		TargetUser int
+		Type       string
+	}
+
+// Transaction godoc
+// @Summary Transfer
+// @Description  transfer money
+// @Tags Transaction
+// @Accept x-www-form-urlencoded
+// @Produce json
+// @Param id path string false "send to"
+// @Param amount formData string false "amount of money"
+// @Success 200 {object} ResponseTRF
+// @Security ApiKeyAuth
+// @Router /transfer/{id} [post]
 func Transfer(c *gin.Context) {
 	var input struct {
 		Amount float64 `form:"amount" json:"amount" binding:"required"`
@@ -87,7 +104,7 @@ func Transfer(c *gin.Context) {
 
 	if err := tx.Create(&transfer).Error; err != nil {
 		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create transfer transaction", "details": err.Error()})
+		response.InternalServerError("Failed to create transfer transaction", err.Error())
 		return
 	}
 
@@ -116,14 +133,8 @@ func Transfer(c *gin.Context) {
 	// Commit the transaction
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to commit database transaction", "details": err.Error()})
+		response.InternalServerError("Failed to commit database transaction", err.Error())
 		return
-	}
-
-	type ResponseTRF struct {
-		Amount     float64
-		TargetUser int
-		Type       string
 	}
 
 	response.Created("Success transfer", ResponseTRF{

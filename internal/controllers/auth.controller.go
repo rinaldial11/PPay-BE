@@ -48,7 +48,7 @@ func Register(c *gin.Context) {
 
 	// Buat User
 	var user = models.User{
-		Email:    input.Email,
+		Email:    strings.ToLower(input.Email),
 		Password: input.Password,
 	}
 
@@ -140,6 +140,16 @@ func GetUserByPhone(phone string) (*models.User, error) {
 	return &user, nil
 }
 
+// Auth godoc
+// @Schemes
+// @Description Authentication Pin
+// @Tags Auth
+// @Accept x-www-form-urlencoded
+// @Produce json
+// @Security ApiKeyAuth
+// @Param pin formData string true "Input Pin"
+// @Success 201 {object} dto.PinDTO
+// @Router /auth/pin [post]
 func VerifPin(c *gin.Context) {
 	response := lib.NewResponse(c)
 	// Get user ID from context
@@ -207,7 +217,7 @@ func CheckPassword(c *gin.Context) {
 	fmt.Println("Existing User:", user)
 
 	// Bind input data
-	var req dto.UpdateUserRequest
+	var req dto.ExistingPasswordDTO
 	if err := c.ShouldBind(&req); err != nil {
 		response.BadRequest("Invalid input", err.Error())
 		return
@@ -220,4 +230,42 @@ func CheckPassword(c *gin.Context) {
 	}
 
 	response.Success("Correct password", nil)
+}
+
+func CheckAvailPin(c *gin.Context) {
+	response := lib.NewResponse(c)
+
+	userId, exists := c.Get("UserId")
+	if !exists {
+		response.Unauthorized("Unauthorized", nil)
+		return
+	}
+	id, ok := userId.(int)
+	if !ok {
+		response.InternalServerError("Failed to parse user ID from token", nil)
+		return
+	}
+
+	// Cari data user berdasarkan ID
+	var user models.User
+	if err := initializers.DB.First(&user, id).Error; err != nil {
+		response.NotFound(fmt.Sprintf("User with ID %d not found", id), nil)
+		return
+	}
+	fmt.Println("Existing User:", user)
+
+	// Cek user mempunyai pin atau tidak
+	var userPin dto.AvailablePinDTO
+	if err := initializers.DB.Model(&models.User{}).Select("pin").Where("id = ? AND is_deleted = ?", user.ID, false).First(&userPin).Error; err != nil {
+		response.NotFound("User does not have pin", nil)
+		return
+	}
+
+	// log.Println(userPin)
+	if userPin == (dto.AvailablePinDTO{}) {
+		response.NotFound("User does not have pin", nil)
+		return
+	}
+
+	response.Success("User has pin", nil)
 }

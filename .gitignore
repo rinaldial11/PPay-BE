@@ -1,8 +1,5 @@
 .env
-<<<<<<< HEAD
-tmp
-=======
 .fresh.yaml
 tmp/
 .vscode/
->>>>>>> main
+public/images/

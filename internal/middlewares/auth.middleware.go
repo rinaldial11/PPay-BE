@@ -17,11 +17,11 @@ func ValidateToken() gin.HandlerFunc {
 			return
 		}
 		token := strings.Split(head, " ")[1]
-		
+
 		if token == "" {
 			response.Unauthorized("Unauthorized", nil)
 		}
-		
+
 		claims, err := lib.VerifyToken(token)
 		if err != nil {
 			response.Unauthorized("Unauthorized", nil)

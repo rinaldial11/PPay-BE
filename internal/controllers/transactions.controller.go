@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ppay/internal/initializers"
+	"github.com/ppay/internal/models"
 	"github.com/ppay/lib"
 )
 
@@ -42,7 +43,17 @@ type TransactionHistoryResponse struct {
 	CreatedAt           string  `json:"created_at"`
 }
 
-// Function to get transaction history
+
+// Transaction godoc
+// @Summary get history transaction
+// @Schemes
+// @Description  Get Transaction History
+// @Tags Transaction
+// @Produce json
+// @Success 200 {object} TransactionHistoryResponse
+// @Security ApiKeyAuth
+// @Router /transaction/history [get]
+// Function untuk mendapatkan riwayat transaksi
 func GetTransactionHistory(c *gin.Context) {
 	response := lib.NewResponse(c)
 
@@ -335,6 +346,15 @@ FROM (
 // 	response.GetAllSuccess("Success get transaction history", transactions, pageInfo)
 // }
 
+// Transaction godoc
+// @Summary get user income
+// @Schemes
+// @Description  get user income
+// @Tags Transaction
+// @Produce json
+// @Success 200 {object} IncomeResponse
+// @Security ApiKeyAuth
+// @Router /transaction/income [get]
 func GetUserIncome(c *gin.Context) {
 	response := lib.NewResponse(c)
 
@@ -366,6 +386,16 @@ func GetUserIncome(c *gin.Context) {
 	response.Success("Success get user income", income)
 }
 
+
+// Transaction godoc
+// @Summary get user expense
+// @Schemes
+// @Description  get user expense
+// @Tags Transaction
+// @Produce json
+// @Success 200 {object} ExpenseResponse
+// @Security ApiKeyAuth
+// @Router /transaction/expense [get]
 func GetUserExpenses(c *gin.Context) {
 	response := lib.NewResponse(c)
 
@@ -395,4 +425,32 @@ func GetUserExpenses(c *gin.Context) {
 	}
 
 	response.Success("Success get user expenses", expenses)
+}
+
+// Transaction godoc
+// @Summary get payment method
+// @Schemes
+// @Description  get payment method
+// @Tags Transaction
+// @Produce json
+// @Success 200 {object} models.PaymentMethod
+// @Security ApiKeyAuth
+// @Router /transaction/payment [get]
+func GetPaymentMethod(c *gin.Context) {
+	response := lib.NewResponse(c)
+
+	// Query to get expense transactions
+	var paymentMethod []models.PaymentMethod
+	query := `
+        select 
+		id, name, tax 
+		from 
+		payment_methods
+    `
+	if err := initializers.DB.Raw(query).Scan(&paymentMethod).Error; err != nil {
+		response.InternalServerError("Failed to retrieve payment method", err.Error())
+		return
+	}
+
+	response.Success("Success get payment method", paymentMethod)
 }

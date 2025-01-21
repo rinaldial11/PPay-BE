@@ -2,7 +2,6 @@ package lib
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"time"
 
@@ -51,7 +50,7 @@ func GenerateToken(userId int) (string, error) {
 
 func VerifyToken(token string) (*TokenPayload, error) {
 	tok, err := jwt.ParseSigned(token, []jose.SignatureAlgorithm{jose.HS256})
-	fmt.Println(tok)
+	// fmt.Println(tok)
 	if err != nil {
 		return nil, err
 	}

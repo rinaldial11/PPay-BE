@@ -53,6 +53,42 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/pin": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Authentication Pin",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Input Pin",
+                        "name": "pin",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PinDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/register": {
             "post": {
                 "description": "Registrasi Account",
@@ -86,6 +122,190 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/dto.RegisterDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/topup": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "topup money",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Topup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "amount of money",
+                        "name": "amount",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "select payment method",
+                        "name": "payment_method_id",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.ResponseTopup"
+                        }
+                    }
+                }
+            }
+        },
+        "/transaction/expense": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get user expense",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "get user expense",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.ExpenseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transaction/history": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get Transaction History",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "get history transaction",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.TransactionHistoryResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transaction/income": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get user income",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "get user income",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.IncomeResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transaction/payment": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get payment method",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "get payment method",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PaymentMethod"
+                        }
+                    }
+                }
+            }
+        },
+        "/transfer/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "transfer money",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Transfer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "send to",
+                        "name": "id",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "amount of money",
+                        "name": "amount",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.ResponseTRF"
                         }
                     }
                 }
@@ -162,9 +382,16 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "description": "This API endpoint is used to create a new user and their wallet.",
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get Profile",
                 "consumes": [
                     "application/json"
                 ],
@@ -174,44 +401,6 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Add User",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Full Name",
-                        "name": "fullname",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Email Address",
-                        "name": "email",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Password",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "PIN (6-digit)",
-                        "name": "pin",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Phone Number",
-                        "name": "phone",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -220,9 +409,34 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/users/{id}": {
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "User",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
             "patch": {
                 "security": [
                     {
@@ -301,6 +515,92 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.ExpenseResponse": {
+            "type": "object",
+            "properties": {
+                "expense": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.IncomeResponse": {
+            "type": "object",
+            "properties": {
+                "income": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.ResponseTRF": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "targetUser": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.ResponseTopup": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.TransactionHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "Jumlah transaksi",
+                    "type": "number"
+                },
+                "created_at": {
+                    "description": "Timestamp transaksi",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID transaksi",
+                    "type": "integer"
+                },
+                "related_user_fullname": {
+                    "description": "Nama lengkap pengguna yang terkait",
+                    "type": "string"
+                },
+                "related_user_image": {
+                    "description": "Gambar pengguna yang terkait",
+                    "type": "string"
+                },
+                "related_user_phone": {
+                    "description": "Nomor telepon pengguna yang terkait",
+                    "type": "string"
+                },
+                "transaction_type": {
+                    "description": "'Sent', 'Received', 'Top-Up'",
+                    "type": "string"
+                },
+                "user_fullname": {
+                    "description": "Nama lengkap pengguna",
+                    "type": "string"
+                },
+                "user_image": {
+                    "description": "Gambar pengguna",
+                    "type": "string"
+                },
+                "user_phone": {
+                    "description": "Nomor telepon pengguna",
+                    "type": "string"
+                }
+            }
+        },
         "dto.LoginDTO": {
             "type": "object",
             "required": [
@@ -314,6 +614,14 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "minLength": 6
+                }
+            }
+        },
+        "dto.PinDTO": {
+            "type": "object",
+            "properties": {
+                "pin": {
+                    "type": "string"
                 }
             }
         },
@@ -411,6 +719,58 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.PaymentMethod": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDeleted": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tax": {
+                    "type": "number"
+                },
+                "topupTransactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TopupTransaction"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TopupTransaction": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDeleted": {
+                    "type": "boolean"
+                },
+                "payment_method_id": {
+                    "type": "integer"
+                },
+                "transactionID": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         }
