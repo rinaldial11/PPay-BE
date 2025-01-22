@@ -52,7 +52,6 @@ type TransactionHistoryResponse struct {
 // @Success 200 {object} TransactionHistoryResponse
 // @Security ApiKeyAuth
 // @Router /transaction/history [get]
-// Function untuk mendapatkan riwayat transaksi
 // Function to get transaction history
 func GetTransactionHistory(c *gin.Context) {
 	response := lib.NewResponse(c)
