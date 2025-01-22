@@ -50,6 +50,21 @@ func Topup(c *gin.Context) {
 		return
 	}
 
+	// Check if user's fullname and phone exist
+	var user struct {
+		Fullname string
+		Phone    string
+	}
+	if err := initializers.DB.Table("users").Select("fullname, phone").Where("id = ?", id).Scan(&user).Error; err != nil {
+		response.InternalServerError("Failed to retrieve user details", err.Error())
+		return
+	}
+
+	if user.Fullname == "" || user.Phone == "" {
+		response.BadRequest("Fullname and phone number must be set before proceeding with the top-up", nil)
+		return
+	}
+
 	// Begin a database transaction
 	tx := initializers.DB.Begin()
 	if tx.Error != nil {

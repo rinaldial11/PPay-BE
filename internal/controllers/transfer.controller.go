@@ -51,6 +51,21 @@ func Transfer(c *gin.Context) {
 		return
 	}
 
+	// Check if the sender's fullname and phone exist
+	var sender struct {
+		Fullname string
+		Phone    string
+	}
+	if err := initializers.DB.Table("users").Select("fullname, phone").Where("id = ?", id).Scan(&sender).Error; err != nil {
+		response.InternalServerError("Failed to retrieve sender's details", err.Error())
+		return
+	}
+
+	if sender.Fullname == "" || sender.Phone == "" {
+		response.BadRequest("Sender's fullname and phone number must be set before proceeding with the transfer", nil)
+		return
+	}
+
 	// Begin a database transaction
 	tx := initializers.DB.Begin()
 	if tx.Error != nil {
@@ -89,10 +104,20 @@ func Transfer(c *gin.Context) {
 	targetId, _ := strconv.Atoi(c.Param("id"))
 
 	// Fetch the target user to ensure valid recipient
-	var targetUser models.User
-	if err := initializers.DB.Where("id = ? AND is_deleted = false", targetId).First(&targetUser).Error; err != nil {
+	var targetUser struct {
+		Fullname string
+		Phone    string
+	}
+	if err := initializers.DB.Table("users").Select("fullname, phone").Where("id = ? AND is_deleted = false", targetId).Scan(&targetUser).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusNotFound, gin.H{"error": "Target user not found"})
+		return
+	}
+
+	// Ensure target user's fullname and phone are set
+	if targetUser.Fullname == "" || targetUser.Phone == "" {
+		tx.Rollback()
+		response.BadRequest("Recipient's fullname and phone number must be set before proceeding with the transfer", nil)
 		return
 	}
 
